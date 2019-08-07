@@ -1,0 +1,75 @@
+---
+title: "My First Dashboard"
+author: "Carl Howe, RStudio"
+date: "8/7/2019"
+output:
+  flexdashboard::flex_dashboard:
+    orientation: rows
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(httr)
+library(jsonlite)
+library(geonames)
+library(dplyr)
+library(magrittr)
+library(flexdashboard)
+
+options(geonamesUsername="rstudio_dashboard")
+
+bos_weather       <- GNweatherIcao("KBOS") %>% select(temperature, stationName, lat, lng)
+anchorage_weather <- GNweatherIcao("PANC") %>% select(temperature, stationName, lat, lng)
+london_weather    <- GNweatherIcao("EGLC") %>% select(temperature, stationName, lat, lng)
+mumbai_weather    <- GNweatherIcao("VABB") %>% select(temperature, stationName, lat, lng)
+
+weather <- rbind(bos_weather, anchorage_weather, london_weather, mumbai_weather)
+weather$temperature <- round(as.numeric(as.character(weather$temperature)))
+
+```
+
+Temps
+=========
+
+### Boston
+
+```{r bos_gauge, echo=FALSE}
+gauge(bos_weather$temperature, min = -40, max = 50, symbol = "°",
+      sectors = gaugeSectors(warning = c(-40, 0), success = c(0,25), danger = c(25,50)))
+```
+
+### Anchorage
+
+```{r anc_gauges, echo=FALSE}
+gauge(anchorage_weather$temperature, min = -40, max = 50, symbol = "°",
+      sectors = gaugeSectors(warning = c(-40, 0), success = c(0,25), danger = c(25,50)))
+```
+
+### London
+
+```{r lon_gauges, echo=FALSE}
+gauge(london_weather$temperature, min = -40, max = 50, symbol = "°",
+      sectors = gaugeSectors(warning = c(-40, 0), success = c(0,25), danger = c(25,50)))
+```
+
+### Mumbai
+
+```{r bom_gauges, echo=FALSE}
+
+gauge(mumbai_weather$temperature, min = -40, max = 50, symbol = "°",
+      sectors = gaugeSectors(warning = c(-40, 0), success = c(0,25), danger = c(25,50)))
+```
+
+Map
+==========
+
+```{r map, echo=FALSE}
+
+library(leaflet)
+
+leaflet() %>% addTiles()  %>%setView(0, 25, zoom = 2) %>% 
+addMarkers(data = weather, lat = ~ lat, lng = ~ lng, group = "Stations", popup = ~ paste0(stationName, ": ", round(as.numeric(as.character(temperature))), "°C"))
+
+```
+
