@@ -5,7 +5,7 @@ date: "8/7/2019"
 output:
   flexdashboard::flex_dashboard:
     orientation: rows
-runtime: shiny
+runtime: flexdashboard
 ---
 
 ```{r setup, include=FALSE}
@@ -16,60 +16,125 @@ library(geonames)
 library(dplyr)
 library(magrittr)
 library(flexdashboard)
+library(leaflet)
 
 options(geonamesUsername="rstudio_dashboard")
 
-bos_weather       <- GNweatherIcao("KBOS") %>% select(temperature, stationName, lat, lng)
-anchorage_weather <- GNweatherIcao("PANC") %>% select(temperature, stationName, lat, lng)
-london_weather    <- GNweatherIcao("EGLC") %>% select(temperature, stationName, lat, lng)
-mumbai_weather    <- GNweatherIcao("VABB") %>% select(temperature, stationName, lat, lng)
+bos_weather       <- GNweatherIcao("KBOS") %>% select(temperature, lat, lng) %>% mutate(stationName = "Boston")
+anchorage_weather <- GNweatherIcao("PANC") %>% select(temperature, lat, lng) %>% mutate(stationName = "Anchorage")
+london_weather    <- GNweatherIcao("EGLC") %>% select(temperature, lat, lng)  %>% mutate(stationName = "London")
+mumbai_weather    <- GNweatherIcao("VABB") %>% select(temperature, lat, lng) %>% mutate(stationName = "Mumbai")
+tdf_weather   <- GNweatherIcao("SAWH") %>% select(temperature, lat, lng) %>% mutate(stationName = "Tierra Del Fuego")
 
-weather <- rbind(bos_weather, anchorage_weather, london_weather, mumbai_weather)
-weather$temperature <- round(as.numeric(as.character(weather$temperature)))
+weather <- rbind(bos_weather, anchorage_weather, london_weather, mumbai_weather, tdf_weather)
+weather <- weather %>% 
+  mutate(temperature = round(as.numeric(as.character(temperature))),
+         lat = round(as.numeric(as.character(lat)), 3),
+         lng = round(as.numeric(as.character(lng)), 3))
+
+gauge_minimum_temp <- -20
+gauge_maximum_temp <- 40
+gauge_cold_temp <- 5
+gauge_hot_temp <- 25
+
+latest_earthquakes <- GNearthquakes(north=90,south=-90,west=-180,east=180,date=Sys.Date(), maxRows = 25)
+latest_earthquakes <- latest_earthquakes %>% 
+    mutate(magnitude = round(as.numeric(as.character(magnitude)),1),
+         lat = round(as.numeric(as.character(lat)), 3),
+         lng = round(as.numeric(as.character(lng)), 3))
+
 
 ```
 
-Temps
-=========
+# Temps
+
+## Gauges
 
 ### Boston
 
 ```{r bos_gauge, echo=FALSE}
-gauge(bos_weather$temperature, min = -40, max = 50, symbol = "°",
-      sectors = gaugeSectors(warning = c(-40, 0), success = c(0,25), danger = c(25,50)))
+gauge(bos_weather$temperature, min = gauge_minimum_temp, max = gauge_maximum_temp, symbol = "°",
+      sectors = gaugeSectors(warning = c(gauge_minimum_temp, gauge_cold_temp), 
+                             success = c(gauge_cold_temp,gauge_hot_temp), danger = c(gauge_hot_temp,gauge_maximum_temp)))
 ```
 
 ### Anchorage
 
 ```{r anc_gauges, echo=FALSE}
-gauge(anchorage_weather$temperature, min = -40, max = 50, symbol = "°",
-      sectors = gaugeSectors(warning = c(-40, 0), success = c(0,25), danger = c(25,50)))
+gauge(anchorage_weather$temperature, min = gauge_minimum_temp, max = gauge_maximum_temp, symbol = "°",
+      sectors = gaugeSectors(warning = c(gauge_minimum_temp, gauge_cold_temp), success = c(gauge_cold_temp,gauge_hot_temp), danger = c(gauge_hot_temp,gauge_maximum_temp)))
 ```
 
 ### London
 
 ```{r lon_gauges, echo=FALSE}
-gauge(london_weather$temperature, min = -40, max = 50, symbol = "°",
-      sectors = gaugeSectors(warning = c(-40, 0), success = c(0,25), danger = c(25,50)))
+gauge(london_weather$temperature, min = gauge_minimum_temp, max = gauge_maximum_temp, symbol = "°",
+      sectors = gaugeSectors(warning = c(gauge_minimum_temp, gauge_cold_temp), success = c(gauge_cold_temp,gauge_hot_temp), danger = c(gauge_hot_temp,gauge_maximum_temp)))
 ```
 
 ### Mumbai
 
 ```{r bom_gauges, echo=FALSE}
 
-gauge(mumbai_weather$temperature, min = -40, max = 50, symbol = "°",
-      sectors = gaugeSectors(warning = c(-40, 0), success = c(0,25), danger = c(25,50)))
+gauge(mumbai_weather$temperature, min = gauge_minimum_temp, max = gauge_maximum_temp, symbol = "°",
+      sectors = gaugeSectors(warning = c(gauge_minimum_temp, gauge_cold_temp), success = c(gauge_cold_temp,gauge_hot_temp), danger = c(gauge_hot_temp,gauge_maximum_temp)))
+```
+
+### Tierra Del Fuego
+
+```{r cc_gauges, echo=FALSE}
+
+gauge(tdf_weather$temperature, min = gauge_minimum_temp, max = gauge_maximum_temp, symbol = "°",
+      sectors = gaugeSectors(warning = c(gauge_minimum_temp, gauge_cold_temp), success = c(gauge_cold_temp,gauge_hot_temp), danger = c(gauge_hot_temp,gauge_maximum_temp)))
 ```
 
 Map
-==========
+----------------------
 
-```{r map, echo=FALSE}
+```{r temp_map, echo=FALSE}
 
-library(leaflet)
+leaflet(width = 1000, height = 600) %>% 
+  addTiles()  %>% 
+  setView(0, 51.5, zoom = 2) %>% 
+  addPopups(data = weather,
+            group = "Weather Stations", 
+            popup = ~ paste0(stationName, "<br \\>", round(as.numeric(as.character(temperature))), "°C")) %>% 
+  addCircleMarkers(data = latest_earthquakes,
+             radius = ~ magnitude*2, stroke = FALSE, fillColor = "#F00",
+            group = "Earthquakes", 
+            popup = ~ paste0(datetime, "<br \\>Magnitude ", magnitude)) %>% 
+  addLayersControl(
+    overlayGroups = c("Weather Stations", "Earthquakes"),
+    options = layersControlOptions(collapsed = FALSE))
 
-leaflet() %>% addTiles()  %>%setView(0, 25, zoom = 2) %>% 
-addMarkers(data = weather, lat = ~ lat, lng = ~ lng, group = "Stations", popup = ~ paste0(stationName, ": ", round(as.numeric(as.character(temperature))), "°C"))
 
 ```
+
+# Earthquake Map
+
+```{r earthquake_map, echo=FALSE}
+
+leaflet() %>% 
+  addTiles()  %>% 
+  setView(0, 20, zoom = 2) %>% 
+  addCircleMarkers(data = latest_earthquakes,
+             radius = ~ magnitude*2, stroke = FALSE, fillColor = "#F00",
+            group = "Earthquakes", 
+            popup = ~ paste0(datetime, "<br \\>Magnitude ", magnitude))
+
+```
+
+# US Weather Map
+
+```{r weather_map}
+leaflet() %>% addTiles() %>% setView(-93.65, 42.0285, zoom = 4) %>%
+  addWMSTiles(
+    "http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi",
+    layers = "nexrad-n0r-900913",
+    options = WMSTileOptions(format = "image/png", transparent = TRUE),
+    attribution = "Weather data © 2012 IEM Nexrad"
+  )
+```
+
+  
 
