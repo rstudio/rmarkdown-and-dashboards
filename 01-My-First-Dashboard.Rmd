@@ -3,7 +3,7 @@ title: "My First Dashboard"
 output:
   flexdashboard::flex_dashboard:
     orientation: rows
-runtime: shiny
+runtime: flexdashboard
 ---
 
 ```{r setup, include=FALSE}
@@ -44,7 +44,7 @@ tdf_weather       <- get_weather("SAWH", "Tierra Del Fuego")
 
 weather <- rbind(bos_weather, sydney_weather, london_weather, mumbai_weather, tdf_weather)
 
-latest_earthquakes <- GNearthquakes(north=90,south=-90,west=-180,east=180,date=Sys.Date(), maxRows = 25)
+latest_earthquakes <- GNearthquakes(north=90,south=-90,west=-180,east=180,date=Sys.Date(), maxRows = 50)
 latest_earthquakes <- latest_earthquakes %>% 
     mutate(magnitude = round(as.numeric(as.character(magnitude)),1),
          lat = round(as.numeric(as.character(lat)), 3),
