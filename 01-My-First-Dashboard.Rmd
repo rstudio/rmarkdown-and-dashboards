@@ -4,6 +4,9 @@ output:
   flexdashboard::flex_dashboard:
     orientation: rows
 runtime: flexdashboard
+params:
+  my_city: "Boston"
+  my_airport: "KBOS"
 ---
 
 ```{r setup, include=FALSE}
@@ -36,13 +39,13 @@ get_weather <- function(airport_code, location) {
   return(wx)
 }
 
-bos_weather       <- get_weather("KBOS", "Boston")
+my_weather        <- get_weather(params$my_airport, params$my_city)
 sydney_weather    <- get_weather("YSSY", "Sydney")
 london_weather    <- get_weather("EGLC", "London")
 mumbai_weather    <- get_weather("VABB", "Mumbai")
 tdf_weather       <- get_weather("SAWH", "Tierra Del Fuego")
 
-weather <- rbind(bos_weather, sydney_weather, london_weather, mumbai_weather, tdf_weather)
+weather <- rbind(my_weather, sydney_weather, london_weather, mumbai_weather, tdf_weather)
 
 latest_earthquakes <- GNearthquakes(north=90,south=-90,west=-180,east=180,date=Sys.Date(), maxRows = 50)
 latest_earthquakes <- latest_earthquakes %>% 
@@ -57,10 +60,10 @@ latest_earthquakes <- latest_earthquakes %>%
 
 ## Gauges
 
-### Boston
+### `r params$my_city`
 
-```{r bos_gauge, echo=FALSE}
-gauge(bos_weather$temperature, min = gauge_minimum_temp, max = gauge_maximum_temp, symbol = "°",
+```{r my_gauge, echo=FALSE}
+gauge(my_weather$temperature, min = gauge_minimum_temp, max = gauge_maximum_temp, symbol = "°",
       sectors = gaugeSectors(warning = c(gauge_minimum_temp, gauge_cold_temp), 
                              success = c(gauge_cold_temp,gauge_hot_temp), danger = c(gauge_hot_temp,gauge_maximum_temp),
       colors = gauge_colors))
