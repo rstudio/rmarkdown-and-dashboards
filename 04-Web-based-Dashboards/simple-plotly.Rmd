@@ -1,0 +1,43 @@
+---
+output: 
+  html_document:
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(plotly)
+library(gapminder)
+```
+
+## Plotly
+
+Plotly does a good job of making any ggplot2 graphic into an interactive one through Javascript. Here's a quick example.
+
+```{r plotly_pressure}
+p <- ggplot(pressure, aes(x = temperature, y = pressure)) +
+  geom_point() +
+  theme_bw()
+ggplotly(p)
+```
+
+## A Gapminder Example
+
+```{r gapminder}
+p <- gapminder %>%
+  filter(year==1977) %>%
+  select(`GDP per Capita` = gdpPercap,
+         `Life Expectancy` = lifeExp,
+         Population = pop,
+         Continent = continent) %>% 
+  ggplot( aes(x = `GDP per Capita`, 
+              y = `Life Expectancy`, 
+              size = Population, 
+              color=Continent)) +
+  geom_point() +
+  scale_x_log10() +
+  theme_bw()
+ 
+ggplotly(p)
+```
