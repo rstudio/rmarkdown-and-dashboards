@@ -1,0 +1,35 @@
+---
+title: World Telephones
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+runtime: shiny
+---
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+library(datasets)
+data(WorldPhones)
+```
+
+# Page 1
+
+This dashboard shows the growth of the telephone market in various geographies.
+
+### Inputs {data-width=250}
+
+
+```{r}
+
+selectInput("region", "Region1:", choices = colnames(WorldPhones))
+
+```
+
+### Results
+
+```{r}
+renderPlot({
+    barplot(WorldPhones[,input$region]*1000, 
+            ylab = "Number of Telephones", xlab = "Year")
+  })
+
+```

@@ -65,7 +65,8 @@ latest_earthquakes <- latest_earthquakes %>%
 ```{r my_gauge, echo=FALSE}
 gauge(my_weather$temperature, min = gauge_minimum_temp, max = gauge_maximum_temp, symbol = "°",
       sectors = gaugeSectors(warning = c(gauge_minimum_temp, gauge_cold_temp), 
-                             success = c(gauge_cold_temp,gauge_hot_temp), danger = c(gauge_hot_temp,gauge_maximum_temp),
+                             success = c(gauge_cold_temp,gauge_hot_temp), 
+                             danger = c(gauge_hot_temp,gauge_maximum_temp),
       colors = gauge_colors))
 ```
 
