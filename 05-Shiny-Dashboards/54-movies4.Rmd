@@ -59,13 +59,3 @@ renderPlot({
       geom_point(alpha = input$alpha)
   })
 ```
-
-### Output Data Table
-
-```{r datatable}
-DT::renderDataTable({
-      DT::datatable(data = movies[, 1:7], 
-                    options = list(pageLength = 10, rownames = FALSE) 
-                    ) 
-  })
-```
