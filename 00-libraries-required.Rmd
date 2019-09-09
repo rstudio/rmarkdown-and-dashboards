@@ -17,5 +17,6 @@ library(tufte)
 library(rticles)
 library(shiny)
 library(DT)
+library(reticulate)
 knitr::opts_chunk$set(echo = TRUE)
 ```
