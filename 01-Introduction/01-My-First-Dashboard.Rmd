@@ -5,6 +5,7 @@ output:
     orientation: rows
 runtime: flexdashboard
 params:
+  geonames_account: "rstudio_dashboard"
   my_city: "Boston"
   my_airport: "KBOS"
 ---
@@ -17,7 +18,7 @@ library(magrittr)
 library(flexdashboard)
 library(leaflet)
 
-options(geonamesUsername="rstudio_dashboard")
+options(geonamesUsername=params$geonames_account)
 
 gauge_minimum_temp <- -20
 gauge_maximum_temp <- 40

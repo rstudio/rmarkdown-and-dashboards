@@ -6,8 +6,6 @@ output: html_document
 ---
 
 ```{r setup, include=FALSE}
-library(httr)
-library(jsonlite)
 library(geonames)
 library(dplyr)
 library(magrittr)
