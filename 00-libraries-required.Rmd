@@ -19,5 +19,6 @@ library(shiny)
 library(DT)
 library(reticulate)
 library(revealjs)
+library(plotly)
 knitr::opts_chunk$set(echo = TRUE)
 ```
