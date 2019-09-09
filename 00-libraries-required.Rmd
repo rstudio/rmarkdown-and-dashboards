@@ -18,5 +18,6 @@ library(rticles)
 library(shiny)
 library(DT)
 library(reticulate)
+library(revealjs)
 knitr::opts_chunk$set(echo = TRUE)
 ```
