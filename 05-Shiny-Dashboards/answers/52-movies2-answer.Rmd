@@ -11,6 +11,7 @@ output:
 library(flexdashboard)
 library(shiny)
 library(ggplot2)
+library(readr)
 load("../data/movies.Rdata")
 theme_set(theme_minimal())
 ```

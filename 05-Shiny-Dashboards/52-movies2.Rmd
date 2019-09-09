@@ -11,6 +11,7 @@ output:
 library(flexdashboard)
 library(shiny)
 library(ggplot2)
+library(readr)
 load("data/movies.Rdata")
 theme_set(theme_minimal())
 ```
@@ -34,11 +35,6 @@ choices <- c("imdb_rating", "imdb_num_votes", "critics_score", "audience_score",
                   choices = choices, 
                   selected = "critics_score")
       # Select variable for color axis ----------------------------------
-      selectInput(inputId = "z", 
-                  label = "Color by:",
-                  choices = c("title_type", "genre", 
-                              "mpaa_rating", "critics_rating", "audience_rating"),
-                  selected = "mpaa_rating")
 
 ```
 
@@ -49,7 +45,7 @@ Column {data-width=550}
 
 ```{r}
 renderPlot({
-    ggplot(data = movies, aes_string(x = input$x, y = input$y, color = input$z)) +
+    ggplot(data = movies, aes_string(x = input$x, y = input$y)) +
       geom_point()
   })
 ```
