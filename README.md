@@ -1,8 +1,8 @@
 # R Markdown and Interactive Dashboards
 
-This repo contains rstudio.cloud Course materials for the September 10, 2019 EARL R Markdown and Interactive Dashboards workshop in London. The short URL for these workshop materials is:
+This repo contains rstudio.cloud Course materials for the January 2020 R Markdown and Interactive Dashboards workshop being held at RStudio::conf 2020. The short URL for these workshop materials is:
 
-<https://bit.ly/2m2azap>
+<https://rstd.io/conf20-rmd-dash>
 
 Carl Howe, Director of Education, RStudio
 
