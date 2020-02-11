@@ -8,9 +8,10 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(revealjs)
 ```
 
-# Slide Section 1 {data-background=images/tower.png data-background-size=100%}
+# Slide Section 1 {data-background=images/sf-image.jpg data-background-size=100%}
 
 ## Heading For Bullets
 
